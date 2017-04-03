@@ -7,7 +7,8 @@ function FFTsleep(EEG)
 % Jul-20-2015 - SF, orginal code
 %
 % Copyright Stuart Fogel, Brain & Mind Institute, Western University
-%
+
+% Revised by Qiangsen He to align events based on the EyeTracking time 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% STUDY-SPECIFIC PARAMETERS
@@ -32,9 +33,11 @@ PARAM = struct(...
     
     filename = {mergedEEGs.name};
                 
-
+    
     % Specify output directory, or leave empty to use pop-up
     resultDir = '/Users/stuartfogel/Documents/DrowsyDriving/FFTsOfMergedEEGsRevised/';
+    
+    eyeSignalPath = '/Users/stuartfogel/Documents/DrowsyDriving/EYE_Analysis/';
     
 %% SELECT EEGLAB FILES(S)
 if nargin < 1
@@ -66,7 +69,22 @@ for nfile = 1:1
     EEG = pop_loadset('filename',filename{1,nfile},'filepath',pathname);
     EEG = eeg_checkset(EEG);
     disp(strcat('File ',{' '},filename{1,nfile},{' '},'loaded'))
+    %------------------------------------------------------------ get the
+    %valid beginning time based on the Eyetracking signal
+    tmpname = char(filename(nfile));
+    eyeTracking = importdata([ eyeSignalPath 'EYE_Data_' tmpname(1:9) '.mat']);
     
+    startTime = eyeTracking.gpInfo.start_time;
+    
+    events = string({EEG.event.type}');
+    
+    indices = find(events==startTime);
+    if ~isempty(indices)
+        interval = indices(end):length(events);
+        EEG = pop_epoch(EEG, PARAM.stages, [0  PARAM.epoch], 'newname',[EEG.setname '_FFT'], 'eventindices',interval, 'epochinfo','yes');
+        EEG = eeg_checkset(EEG);
+    end
+    %------------------------------------------------------------
     % find stages to epoch
     stageIndex = find(ismember({EEG.event.type},PARAM.stages));
     
@@ -104,7 +122,7 @@ for nfile = 1:1
     goodepochs = stageIndex;
     todelete = unique(todelete); % get unique indices, re; can be duplicates from above
     todelete = find(ismember(stageIndex, todelete));
-   % goodepochs(todelete) = []; % delete the stages from stageIndex
+    goodepochs(todelete) = []; % delete the stages from stageIndex
     
     % housekeeping
     clear todelete stageIndex badIndex

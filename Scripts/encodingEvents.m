@@ -39,14 +39,12 @@ for i = 1:length(indices)
     end
     
     
-    left = min(indices(i)-last+1,3);
-    right =min(next -indices(i),3);
-    if(left<3)
-        left = floor(left/2);
-    end
-    if(right<3)
-        right = ceil(right/2);
-    end
+    left = min(indices(i)-last+1,6);
+    right =min(next -indices(i),6);
+
+    left = floor(left/2);
+    right = ceil(right/2);
+
     m=1;
     n=1;
     % iterate to left

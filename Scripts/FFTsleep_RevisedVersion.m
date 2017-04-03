@@ -34,7 +34,7 @@ PARAM = struct(...
                 
 
     % Specify output directory, or leave empty to use pop-up
-    resultDir = '/Users/stuartfogel/Documents/DrowsyDriving/FFTsOfMergedEEGs/';
+    resultDir = '/Users/stuartfogel/Documents/DrowsyDriving/FFTsOfMergedEEGsRevised/';
     
 %% SELECT EEGLAB FILES(S)
 if nargin < 1
@@ -55,7 +55,7 @@ end
 
 tic
 
-for nfile = 1:length(filename)
+for nfile = 1:1
     if(nfile==21) % DD_S41_NS_merged_EEG can not be runned due to the 'movement' validation
         continue;
     end 
@@ -104,7 +104,7 @@ for nfile = 1:length(filename)
     goodepochs = stageIndex;
     todelete = unique(todelete); % get unique indices, re; can be duplicates from above
     todelete = find(ismember(stageIndex, todelete));
-    goodepochs(todelete) = []; % delete the stages from stageIndex
+   % goodepochs(todelete) = []; % delete the stages from stageIndex
     
     % housekeeping
     clear todelete stageIndex badIndex

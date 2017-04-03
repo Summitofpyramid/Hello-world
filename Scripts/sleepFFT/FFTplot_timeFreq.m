@@ -21,7 +21,7 @@ PARAM = struct(...
     'epoch', 5, ... length in seconds of sleep stage epoch {default: 30}
     'stages', {{'H0','H1','H2','H3','H4','H5','H6','H7','H8','H9'}}, ... labels of sleep stage epoch, {default: {{'W','N1','N2','N3','R,}}}
     'baddata', {{'Movement'}}, ... label for bad data, {default: {{'Movement'}}}
-    'winsize', 1, ... size of FFT window in seconds {default: 5}. Use default for 6 windows per 30 sec sleep stage and a freq resolution of 0.2Hz.
+    'winsize', 5, ... size of FFT window in seconds {default: 5}. Use default for 6 windows per 30 sec sleep stage and a freq resolution of 0.2Hz.
     'freqrange', [0 32], ... range of frequencies {default: [0 32]}
     'plotchans', [3:5 8:12 14:18 20], ... vector of channel indices to include in FFT {default: [3:5 7:9 11:14]; i.e., C3,C4,Cz,F3,F4,Fz,Oz,P3,P4,Pz}
     'plot', 'off' ... ['on'|'off'], plot result, {default: 'off'}
@@ -76,17 +76,17 @@ set(gca,'YTickLabel',[' ',PARAM.stages,' ']) % need to customize depending on ab
 % labels
 title('Time domain') % figure title
 xlabel('Time') % x-axis label
-ylabel('Magnitude') % y-axis label
+ylabel('Events') % y-axis label
 
 %% time-frequency plot
 % e.g., plot up to 20 Hz (winsize * freq), 5 * 20 = 100
 % e.g., for channel 3 = Cz
-ch = 2; % e.g., Cz
+ch = 1; % e.g., Cz
 
 % axis scales:
 % e.g., plotted to 1 20Hz and min/max
 loHz = 1;
-hiHz = 20;
+hiHz = 32;
 % rescale
 flo = loHz;
 fhi = PARAM.winsize*hiHz;
@@ -99,18 +99,18 @@ image(squeeze(FFT.spectra(ch,flo:fhi,:)),'CDataMapping','scaled')
 set(gca,'YDir','normal')
 ylim([flo fhi]) % upper and lower limits of y-axis
 xlim([0 length(stages)]) % upper and lower limits of x-axis
-set(gca,'YTickLabel',[4 8 12 16 20]) % need to customize depending on above axis scales
+set(gca,'YTickLabel',[4 8 12 16 20 24 28 32]) % need to customize depending on above axis scales
 
 % colors 
 set(gcf,'color','w'); % change figure background to white
 
 % labels
-title('Figure title goes here') % figure title
-xlabel('x-axis label goes here') % x-axis label
-ylabel('y-axis label goes here') % y-axis label
+title('Spectrogram') % figure title
+xlabel('Time') % x-axis label
+ylabel('Frequency') % y-axis label
 
 % color bar
 cbar('vert',0,[-1 1].*round(nanmax(nanmax(abs(squeeze(FFT.spectra(ch,flo:fhi,:)))))))
-title('µV^2') % figure title
+title('dB') % figure title
 
-clearvars -except FFT PARAM
+%clearvars -except FFT PARAM

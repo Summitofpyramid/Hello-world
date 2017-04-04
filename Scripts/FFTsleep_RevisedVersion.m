@@ -35,7 +35,7 @@ PARAM = struct(...
                 
     
     % Specify output directory, or leave empty to use pop-up
-    resultDir = '/Users/stuartfogel/Documents/DrowsyDriving/FFTsOfMergedEEGsRevised/';
+    resultDir = '/Users/stuartfogel/Documents/DrowsyDriving/FFTsOfMergedEEGsAligned/';
     
     eyeSignalPath = '/Users/stuartfogel/Documents/DrowsyDriving/EYE_Analysis/';
     
@@ -58,7 +58,7 @@ end
 
 tic
 
-for nfile = 1:1
+for nfile = 1:length(filename)
     if(nfile==21) % DD_S41_NS_merged_EEG can not be runned due to the 'movement' validation
         continue;
     end 
@@ -69,8 +69,8 @@ for nfile = 1:1
     EEG = pop_loadset('filename',filename{1,nfile},'filepath',pathname);
     EEG = eeg_checkset(EEG);
     disp(strcat('File ',{' '},filename{1,nfile},{' '},'loaded'))
-    %------------------------------------------------------------ get the
-    %valid beginning time based on the Eyetracking signal
+    %------------------------------------------------------------ 
+    %get the valid beginning time based on the Eyetracking signal
     tmpname = char(filename(nfile));
     eyeTracking = importdata([ eyeSignalPath 'EYE_Data_' tmpname(1:9) '.mat']);
     
@@ -80,9 +80,11 @@ for nfile = 1:1
     
     indices = find(events==startTime);
     if ~isempty(indices)
-        interval = indices(end):length(events);
-        EEG = pop_epoch(EEG, PARAM.stages, [0  PARAM.epoch], 'newname',[EEG.setname '_FFT'], 'eventindices',interval, 'epochinfo','yes');
+        interval = EEG.event(indices(end)).latency;
+        EEG = pop_select(EEG, 'nopoint',[1 interval]);
         EEG = eeg_checkset(EEG);
+    else
+        disp(['No EyeTracking start time found in ' filename(nfile) ]);
     end
     %------------------------------------------------------------
     % find stages to epoch
@@ -182,6 +184,7 @@ for nfile = 1:1
     
     % housekeeping
     clear datasize mspectra nstage stageIndex
+    
     
     %% SAVE THE FFT RESULTS
     OutputPath = [resultDir,filesep];

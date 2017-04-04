@@ -19,10 +19,10 @@ channels = {'channel1';'channel2';'channel3';'channel4';'channel5';'channel6';'c
 
 for i = 1:length(filenames)
     FFT = importdata([inputPath filenames(i).name]);
-    % extend the FFT by filling with blank areas
-    FFT = extendSpectra(FFT.FFT);
+    %%
+    FFT = extendSpectra(FFT);
     
-    spectra = FFT.spectra;
+    spectra = FFT.FFT.spectra;
     BandsSumPow =zeros(size(spectra,1),8,size(spectra,3));
     BandsSumPowCell = struct;
     for j = 1:8

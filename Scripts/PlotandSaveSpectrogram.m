@@ -6,7 +6,7 @@ figurePath = '/Users/stuartfogel/Documents/DrowsyDriving/savedSpectrogramsAligne
 
 FFTs = dir([FFTsPath '*.mat']);
 
-for i =1:length(FFTs)
+for i =21:length(FFTs)
     saveName = FFTs(i).name;
     
     FFT = importdata([FFTsPath FFTs(i).name]);

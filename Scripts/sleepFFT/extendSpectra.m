@@ -9,7 +9,7 @@ totalEpoches = ceil(endTime/1280);
 
 extendedSpectra = zeros(size(FFT.spectra,1),size(FFT.spectra,2),totalEpoches);
 
-for i = 1:size(FFT.spectra,3)
+for i = 1:length(FFT.event)
     matched = ceil(FFT.event(i).latency/1280);
     extendedSpectra(:,:,matched) = FFT.spectra(:,:,i);
 end

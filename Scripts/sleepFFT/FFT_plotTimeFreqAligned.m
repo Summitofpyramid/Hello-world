@@ -96,7 +96,7 @@ ylabel('Frequency') % y-axis label
 
 % color bar
 cbar('vert',0,[-1 1].*round(nanmax(nanmax(abs(squeeze(FFT.spectra(ch,flo:fhi,:)))))))
-title('dB') % figure title
+title('µV^2') % figure title
 
 savefig(saveName)
 

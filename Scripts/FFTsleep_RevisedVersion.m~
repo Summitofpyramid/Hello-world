@@ -60,7 +60,7 @@ end
 
 tic
 
-for nfile = 5:6
+for nfile = 4:4
     if(nfile==21) % DD_S41_NS_merged_EEG can not be runned due to the 'movement' validation
         continue;
     end 
@@ -90,17 +90,12 @@ for nfile = 5:6
         save([MergedEEGsAligned currentEEGname(1:end-4) '_Aligned.mat'],'EEG');
     else
         disp(['No EyeTracking start time found in ' filename(nfile) ]);
-        for i = 1:length(EEG.event)
+        for i = length(EEG.event)
             if length(char(EEG.event(i).type)) >20
-                indices = [indices;EEG.event(i).urevent];
+                indices = [indices;EEG.urevent(i)];
             end
         end
         
-        interval = EEG.event(indices(3)).latency;
-        EEG = pop_select(EEG, 'nopoint',[1 interval]);
-        EEG = eeg_checkset(EEG);
-        currentEEGname = char(filename(nfile));
-        save([MergedEEGsAligned currentEEGname(1:end-4) '_Aligned.mat'],'EEG');
     end
     %------------------------------------------------------------
     % find stages to epoch

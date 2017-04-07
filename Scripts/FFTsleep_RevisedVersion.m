@@ -60,7 +60,7 @@ end
 
 tic
 
-for nfile = 5:6
+for nfile = 1:length(filename)
     if(nfile==21) % DD_S41_NS_merged_EEG can not be runned due to the 'movement' validation
         continue;
     end 
@@ -71,7 +71,7 @@ for nfile = 5:6
     EEG = pop_loadset('filename',filename{1,nfile},'filepath',pathname);
     EEG = eeg_checkset(EEG);
     disp(strcat('File ',{' '},filename{1,nfile},{' '},'loaded'))
-    %------------------------------------------------------------ 
+    %------------------------------------------------------------------------------------------------------------ 
     %get the valid beginning time based on the Eyetracking signal
     tmpname = char(filename(nfile));
     eyeTracking = importdata([ eyeSignalPath 'EYE_Data_' tmpname(1:9) '.mat']);
@@ -87,7 +87,6 @@ for nfile = 5:6
         EEG = pop_select(EEG, 'nopoint',[1 interval]);
         EEG = eeg_checkset(EEG);
         currentEEGname = char(filename(nfile));
-        save([MergedEEGsAligned currentEEGname(1:end-4) '_Aligned.mat'],'EEG');
     else
         disp(['No EyeTracking start time found in ' filename(nfile) ]);
         for i = 1:length(EEG.event)
@@ -95,14 +94,19 @@ for nfile = 5:6
                 indices = [indices;EEG.event(i).urevent];
             end
         end
-        
+        %% find the second unique time as the starting time
         interval = EEG.event(indices(3)).latency;
         EEG = pop_select(EEG, 'nopoint',[1 interval]);
         EEG = eeg_checkset(EEG);
         currentEEGname = char(filename(nfile));
-        save([MergedEEGsAligned currentEEGname(1:end-4) '_Aligned.mat'],'EEG');
     end
-    %------------------------------------------------------------
+    %------------------------------------------------------------------------------------------------------------ 
+    % change the latency of 'W' and 'Ni' event so that they are aligned
+    % with the previous 'Hi' event 
+    EEG = TimeShift(EEG);
+    EEG = eeg_checkset(EEG);
+    save([MergedEEGsAligned currentEEGname(1:end-4) '_Aligned.mat'],'EEG');
+    %------------------------------------------------------------------------------------------------------------ 
     % find stages to epoch
     stageIndex = find(ismember({EEG.event.type},PARAM.stages));
     
